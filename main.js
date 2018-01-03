@@ -2,7 +2,7 @@ const electron = require('electron');
 const path = require('path');
 const url = require('url');
 
-const {app, BrowserWindow, Menu} = electron;
+const {app, BrowserWindow, Menu, ipcMain} = electron;
 
 let mainWindow;
 let addWindow;
@@ -50,6 +50,12 @@ const createAddWindow = () => {
     })
 };
 
+// Catch item:add
+ipcMain.on('item:add', function(e, item) {
+    mainWindow.webContents.send('item:add', item);
+    addWindow.close();
+});
+
 // Create menu templates
 const mainMenuTemplate = [
     {
@@ -63,6 +69,9 @@ const mainMenuTemplate = [
             },
             {
                 label: 'Clear Items',
+                click() {
+                    mainWindow.webContents.send('item:clear');
+                }
             },
             {
                 label: 'Quit',
